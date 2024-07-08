@@ -12,6 +12,9 @@ block content
         div=`$${item.price}` 
         div=item.stock 
         div
+          if item.category.length === 0
+            span Uncategorized 
+          else
             for category in item.category 
                 a(href=`/inventory/category/${category._id}`)=category.name
                 if item.category.length > 1 && item.category[0] === category

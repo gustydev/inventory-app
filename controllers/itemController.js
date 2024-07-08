@@ -23,25 +23,25 @@ exports.detail = asyncHandler(async function(req,res,next) {
 })
 
 exports.createGet = asyncHandler(async function(req,res,next) {
-    res.render('Item create get')
+    res.send('Item create get')
 })
 
 exports.createPost = asyncHandler(async function(req,res,next) {
-    res.render('Item create post')
+    res.send('Item create post')
 })
 
 exports.updateGet = asyncHandler(async function(req,res,next) {
-    res.render('Item update get')
+    res.send('Item update get')
 })
 
 exports.updatePost = asyncHandler(async function(req,res,next) {
-    res.render('Item update post')
+    res.send('Item update post')
 })
 
 exports.deleteGet = asyncHandler(async function(req,res,next) {
-    res.render('Item delete get')
+    res.send('Item delete get')
 })
 
 exports.deletePost = asyncHandler(async function(req,res,next) {
-    res.render('Item delete post')
+    res.send('Item delete post')
 })

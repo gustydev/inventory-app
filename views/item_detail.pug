@@ -7,10 +7,13 @@ block content
     li #[strong ID:] #{item._id}
     li #[strong Name:] #{item.name}
     li #[strong Description:] #{item.description}
-    li #[strong Price:] #{item.price}
+    li #[strong Price:] $#{item.price}
     li #[strong In stock:] #{item.stock}
     li #[strong Category:]&nbsp;
-        for category in item.category 
+        if item.category.length === 0
+          span Uncategorized
+        else
+          for category in item.category 
             a(href=`/inventory/category/${category._id}`)=category.name
             if item.category.length > 1 && item.category[0] === category
               span=', '

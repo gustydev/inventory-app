@@ -1,0 +1,19 @@
+extends layout 
+
+block content 
+    h2= title
+    if count
+        p #{count} items have the #{category.name} category:  
+        ul
+            for item in items
+                li= `${item.name} `
+                    a(href=`/inventory/item/${item._id}`) (ID: #{item._id})
+        p By deleting this category, #[strong some of those items may become uncategorized.] 
+    else 
+        p No items have this category.
+    p Are you sure you want to delete it?
+    form(method="post")
+        input#categoryid(type='hidden' name='categoryid' value=category._id)
+        label(for="password") Secret password: 
+        input#password(type='password' name='password' required) 
+        button(type='submit') Delete
