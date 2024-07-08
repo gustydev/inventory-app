@@ -5,7 +5,23 @@ const Item = require('../models/item');
 const Category = require('../models/category');
 
 exports.list = asyncHandler(async function(req, res, next) {
-    res.render('Category list')
+    const categories = await Category.find({}).exec();
+
+    res.render('category_list', {
+        title: 'List of categories',
+        categories: categories
+    })
+})
+
+exports.detail = asyncHandler(async function(req,res,next) {
+    const category = await Category.findById(req.params.id).exec();
+    const itemsWithCategory = await Item.find({category: category}).exec();
+
+    res.render('category_detail', {
+        title: 'Category',
+        category: category,
+        items: itemsWithCategory
+    })
 })
 
 exports.createGet = asyncHandler(async function(req,res,next) {
@@ -30,8 +46,4 @@ exports.deleteGet = asyncHandler(async function(req,res,next) {
 
 exports.deletePost = asyncHandler(async function(req,res,next) {
     res.render('Category delete post')
-})
-
-exports.detail = asyncHandler(async function(req,res,next) {
-    res.render('Category detail')
 })

@@ -20,7 +20,7 @@ router.post('/category/:id/update', category_controller.updatePost)
 router.get('/category/:id/delete', category_controller.deleteGet)
 router.post('/category/:id/delete', category_controller.deletePost)
 
-router.get('/category/:id/detail', category_controller.detail)
+router.get('/category/:id', category_controller.detail)
 
 // Item routes
 router.get('/items', item_controller.list);
@@ -34,6 +34,6 @@ router.post('/item/:id/update', item_controller.updatePost)
 router.get('/item/:id/delete', item_controller.deleteGet)
 router.post('/item/:id/delete', item_controller.deletePost)
 
-router.get('/item/:id/detail', item_controller.detail)
+router.get('/item/:id', item_controller.detail)
 
 module.exports = router;

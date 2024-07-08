@@ -1,0 +1,22 @@
+extends layout 
+
+block content
+  h2= `${title}: ${item.name}`
+  h3 Details:
+  ul 
+    li #[strong ID:] #{item._id}
+    li #[strong Name:] #{item.name}
+    li #[strong Description:] #{item.description}
+    li #[strong Price:] #{item.price}
+    li #[strong In stock:] #{item.stock}
+    li #[strong Category:]&nbsp;
+        for category in item.category 
+            a(href=`/inventory/category/${category._id}`)=category.name
+            if item.category.length > 1 && item.category[0] === category
+              span=', '
+  h3 Actions:
+  ul 
+    li
+        a(href=`/inventory/item/${item._id}/update`) Update
+    li
+        a(href=`/inventory/item/${item._id}/delete`) Delete

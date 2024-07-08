@@ -5,7 +5,21 @@ const Category = require('../models/category');
 const Item = require('../models/item');
 
 exports.list = asyncHandler(async function(req, res, next) {
-    res.render('Item list')
+    const items = await Item.find().populate('category').exec();
+
+    res.render('item_list', {
+        title: 'Items',
+        items: items
+    })
+})
+
+exports.detail = asyncHandler(async function(req,res,next) {
+    const item = await Item.findById(req.params.id).populate('category').exec();
+
+    res.render('item_detail', {
+        title: 'Item',
+        item: item
+    })
 })
 
 exports.createGet = asyncHandler(async function(req,res,next) {
@@ -30,8 +44,4 @@ exports.deleteGet = asyncHandler(async function(req,res,next) {
 
 exports.deletePost = asyncHandler(async function(req,res,next) {
     res.render('Item delete post')
-})
-
-exports.detail = asyncHandler(async function(req,res,next) {
-    res.render('Item detail')
 })

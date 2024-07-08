@@ -1,0 +1,11 @@
+extends layout 
+
+block content 
+    h2= title 
+    if categories.length 
+      ul
+      for category in categories 
+        li
+          a(href=`./category/${category._id}`)= category.name
+    else 
+      p No categories found

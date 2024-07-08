@@ -1,0 +1,20 @@
+extends layout 
+
+block content 
+  h2= title 
+  if items.length 
+    ul
+    for item in items 
+        li(class='item')
+        div
+            a(href=`/inventory/item/${item._id}`)=item.name 
+        div=item.description 
+        div=`$${item.price}` 
+        div=item.stock 
+        div
+            for category in item.category 
+                a(href=`/inventory/category/${category._id}`)=category.name
+                if item.category.length > 1 && item.category[0] === category
+                    span=', '
+  else 
+    p No items found

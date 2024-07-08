@@ -1,0 +1,23 @@
+extends layout 
+
+block content 
+  h2= `${title}: ${category.name}`
+  h3 Details:
+  ul 
+    li #[strong ID:] #{category.id}
+    li #[strong Name:] #{category.name}
+    li #[strong Description:] #{category.description || 'No description was provided.'}
+  h3 Items:
+  if items.length 
+    ul
+      for item in items 
+        li #{item.name}&nbsp;
+          a(href=`/inventory/item/${item._id}`)=`(${item._id})`
+  else 
+    p No items found
+  h3 Actions:
+  ul 
+    li
+        a(href=`/inventory/category/${category._id}/update`) Update
+    li
+        a(href=`/inventory/category/${category._id}/delete`) Delete
