@@ -67,6 +67,7 @@ exports.updateGet = asyncHandler(async function(req,res,next) {
 exports.updatePost = [
     body('name', 'Category name is missing').trim().isLength({min: 1}).escape(),
     body('description', 'Description has max length of 100 characters').isLength({max: 100}).trim().escape(),
+    body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
 
     asyncHandler(async function(req, res, next) {
         const errors = validationResult(req)
@@ -76,7 +77,7 @@ exports.updatePost = [
             _id: req.params.id
         });
 
-        if (errors.isEmpty() && req.body.password === process.env.SUPERSECRET) {
+        if (errors.isEmpty()) {
             const updated = await Category.findByIdAndUpdate(req.params.id, updatedCategory, {});
             res.redirect(updated.url);
         } else {
@@ -104,20 +105,27 @@ exports.deleteGet = asyncHandler(async function(req,res,next) {
     })
 })
 
-exports.deletePost = asyncHandler(async function(req, res, next) {
-    if (req.body.password === process.env.SUPERSECRET) {
-        await Category.findByIdAndDelete(req.params.id).exec();
-        res.redirect('/inventory/categories');
-    } else {
-        const category = await Category.findById(req.params.id).exec();
-        const itemsWithCategory = await Item.find({category: category}).exec();
-        const itemCount = await Item.countDocuments({category: category}).exec();
+exports.deletePost = [
+    body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
 
-        res.render('category_delete', {
-            title: `Delete category: ${category.name}`,
-            category: category,
-            items: itemsWithCategory,
-            count: itemCount
-        })
-    }
-})
+    asyncHandler(async function(req, res, next) {
+        const errors = validationResult(req);
+
+        if (errors.isEmpty()) {
+            await Category.findByIdAndDelete(req.params.id).exec();
+            res.redirect('/inventory/categories');
+        } else {
+            const category = await Category.findById(req.params.id).exec();
+            const itemsWithCategory = await Item.find({category: category}).exec();
+            const itemCount = await Item.countDocuments({category: category}).exec();
+    
+            res.render('category_delete', {
+                title: `Delete category: ${category.name}`,
+                category: category,
+                items: itemsWithCategory,
+                count: itemCount,
+                errors: errors.array()
+            })
+        }
+    })
+]
