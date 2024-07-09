@@ -105,6 +105,7 @@ exports.updatePost = [
     body('price', 'Price is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
     body('stock', 'Stock is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
     body('category.*').escape(),
+    body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
 
     asyncHandler(async function(req,res,next) {
         const errors = validationResult(req);
