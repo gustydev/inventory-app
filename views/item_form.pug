@@ -13,9 +13,14 @@ block content
     input#stock(type='number' name='stock' required min=0 value=(item === undefined ? '' : item.stock))
     label Category: 
     for category in categories 
-      if item && item.category.includes(category) 
+      if item !== undefined && category.checked === true
         input(type="checkbox" name='category' id=category._id value=category._id checked)
       else 
         input(type="checkbox" name='category' id=category._id value=category._id)
       label(for=category._id ) &nbsp;#{category.name}
     button(type='submit') Submit
+    if errors 
+      h2 Errors: 
+      ul 
+        for error in errors 
+            li=error.msg

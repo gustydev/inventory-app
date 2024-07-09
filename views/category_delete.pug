@@ -18,5 +18,7 @@ block content
         input#password(type='password' name='password' required) 
         button(type='submit') Delete
     if errors 
+      h2 Errors: 
+      ul 
         for error in errors 
-            p #[strong #{error.msg}]
+            li=error.msg

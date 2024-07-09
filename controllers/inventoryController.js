@@ -18,7 +18,7 @@ exports.index = asyncHandler(async function(req, res, next) {
     })
 
     res.render('index', {
-        title: 'Index',
+        title: 'Home',
         categories: categories,
         items: items,
         categoryCount: categoryCount,
