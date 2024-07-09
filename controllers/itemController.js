@@ -141,9 +141,31 @@ exports.updatePost = [
 ]
 
 exports.deleteGet = asyncHandler(async function(req,res,next) {
-    res.send('Item delete get')
+    const item = await Item.findById(req.params.id).populate('category').exec();
+
+    res.render('item_delete', {
+        title: `Delete item: ${item.name}`,
+        item: item
+    })
 })
 
-exports.deletePost = asyncHandler(async function(req,res,next) {
-    res.send('Item delete post')
-})
+exports.deletePost = [
+    body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
+
+    asyncHandler(async function(req, res, next) {
+        const errors = validationResult(req);
+
+        if (errors.isEmpty()) {
+            await Item.findByIdAndDelete(req.params.id);
+            res.redirect('/inventory/items')
+        } else {
+            const item = await Item.findById(req.params.id).populate('category').exec();
+
+            res.render('item_delete', {
+                title: `Delete item: ${item.name}`,
+                item: item,
+                errors: errors.array()
+            })
+        }
+    })
+]
