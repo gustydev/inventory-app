@@ -15,7 +15,7 @@ block content
         else
           for category in item.category 
             a(href=`/inventory/category/${category._id}`)=category.name
-            if item.category.length > 1 && item.category[0] === category
+            if item.category.length > 1 && item.category[item.category.length - 1] !== category
               span=', '
   h3 Actions:
   ul 

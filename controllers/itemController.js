@@ -23,12 +23,54 @@ exports.detail = asyncHandler(async function(req,res,next) {
 })
 
 exports.createGet = asyncHandler(async function(req,res,next) {
-    res.send('Item create get')
+    const categories = await Category.find({}).exec();
+
+    res.render('item_form', {
+        title: 'Create item',
+        categories: categories
+    })
 })
 
-exports.createPost = asyncHandler(async function(req,res,next) {
-    res.send('Item create post')
-})
+exports.createPost = [
+    // Convert category to array
+    (req, res, next) => {
+        if (!Array.isArray(req.body.category)) {
+          req.body.category =
+            typeof req.body.category === "undefined" ? [] : [req.body.category];
+        }
+        next();
+    },
+
+    // Sanitize and validate inputs
+    body('name', 'Name must not be empty').isLength({min: 1}).trim().escape(),
+    body('description', 'Description is invalid').trim().escape(),
+    body('price', 'Price is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
+    body('stock', 'Stock is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
+    body('category.*').escape(),
+
+    asyncHandler(async function(req,res,next) {
+        const errors = validationResult(req);
+        const item = new Item({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            stock: req.body.stock,
+            category: req.body.category
+        });
+
+        if (errors.isEmpty()) {
+            await item.save();
+            res.redirect(item.url);
+        } else {
+            const categories = await Category.find({}).exec();
+            res.render('item_form', {
+                title: 'Create item',
+                categories: categories,
+                errors: errors.array()
+            })
+        }
+    })
+]
 
 exports.updateGet = asyncHandler(async function(req,res,next) {
     res.send('Item update get')

@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
-    name: {type: String, required: true, min: 3, max: 50},
-    description: {type: String, min: 1, max: 150},
+    name: {type: String, required: true, min: 1},
+    description: {type: String},
     price: {type: Number, required: true, min: 0},
     stock: {type: Number, required: true, min: 0},
     category: [{type: Schema.Types.ObjectId, ref: 'Category'}]

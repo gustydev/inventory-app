@@ -2,4 +2,20 @@ extends layout
 
 block content 
   h2=title 
-  form(action='POST')
+  form(method='POST')
+    label(for="name") Name*: 
+    input#name(type="text" name='name' placeholder='item name' required min=1 value=(item === undefined ? '' : item.name))
+    label(for="description") Description: 
+    input#description(type='text' name='description' placeholder='description' value=(item === undefined ? '' : item.description))
+    label(for="price") Price*: 
+    input#price(type='number' name='price' required min=0 value=(item === undefined ? '' : item.price))
+    label(for="stock") Stock*: 
+    input#stock(type='number' name='stock' required min=0 value=(item === undefined ? '' : item.stock))
+    label Category: 
+    for category in categories 
+      if item && item.category.includes(category) 
+        input(type="checkbox" name='category' id=category._id value=category._id checked)
+      else 
+        input(type="checkbox" name='category' id=category._id value=category._id)
+      label(for=category._id ) &nbsp;#{category.name}
+    button(type='submit') Submit
