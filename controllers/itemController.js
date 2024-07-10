@@ -1,5 +1,8 @@
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const multer = require('multer');
+const upload = multer({ dest: './public/images/uploads/'});
+const cloudinary = require('cloudinary');
 
 const Category = require('../models/category');
 const Item = require('../models/item');
@@ -40,6 +43,9 @@ exports.createPost = [
         }
         next();
     },
+
+    // Don't upload image
+    upload.none(),
 
     // Sanitize and validate inputs
     body('name', 'Name must not be empty').isLength({min: 1}).trim().escape(),
@@ -98,7 +104,10 @@ exports.updatePost = [
             }
         next();
     },
-    
+
+    // Upload image
+    upload.single('image'),
+
     // Sanitize and validate inputs
     body('name', 'Name must not be empty').isLength({min: 1}).trim().escape(),
     body('description', 'Description is invalid').trim().escape(),
@@ -109,16 +118,26 @@ exports.updatePost = [
 
     asyncHandler(async function(req,res,next) {
         const errors = validationResult(req);
-        const item = new Item({
-            name: req.body.name,
-            description: req.body.description,
-            price: req.body.price,
-            stock: req.body.stock,
-            category: req.body.category,
-            _id: req.params.id
-        });
 
         if (errors.isEmpty()) {
+            const item = new Item({
+                name: req.body.name,
+                description: req.body.description,
+                price: req.body.price,
+                stock: req.body.stock,
+                category: req.body.category,
+                _id: req.params.id
+            });
+            
+            if (req.file) {
+                await cloudinary.v2.uploader.upload(`./${req.file.path}`)
+                .then(async function (image) {
+                    console.log('Image uploaded to Cloudinary: ', image)
+                    item.imgUrl = image.secure_url;
+                })
+                .catch(error => console.log('Error uploading image: ', error))
+            }
+
             const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
             res.redirect(updatedItem.url);
         } else {

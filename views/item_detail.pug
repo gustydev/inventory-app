@@ -2,6 +2,8 @@ extends layout
 
 block content
   h2= `${title}: ${item.name}`
+  if item.imgUrl !== undefined
+    img(src=item.imgUrl, alt=item.name)
   h3 Details:
   ul 
     li #[strong ID:] #{item._id}
