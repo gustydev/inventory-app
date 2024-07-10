@@ -4,11 +4,20 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const compression = require('compression');
+const helmet = require('helmet');
 
 const indexRouter = require('./routes/index');
 const inventoryRouter = require('./routes/inventory');
 
 const app = express();
+
+const RateLimit = require("express-rate-limit");
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 50,
+});
+app.use(limiter);
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', 'false')
@@ -22,6 +31,13 @@ async function main() {
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+app.use(compression());
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    "img-src": ['res.cloudinary.com']
+  }
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
