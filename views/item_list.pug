@@ -2,23 +2,28 @@ extends layout
 
 block content 
   h2= title 
+  a(href='/inventory/item/create' style='font-weight:bold') Create item
   if items.length 
-    ul
-    for item in items 
-        li(class='item')
-        div
-            a(href=`/inventory/item/${item._id}`)=item.name 
-        div=item.description 
-        div=`$${item.price}` 
-        div=item.stock 
-        div
-          if item.category.length === 0
-            span Uncategorized 
-          else
-            for category in item.category 
+    ul(class='item-list')
+      for item in items 
+        li(class='item-list-item')
+          if item.imgUrl
+            div 
+              img(src=item.imgUrl, alt=item.name, class='item-img')
+          div
+            a(href=`/inventory/item/${item._id}` style='font-weight:bold')=item.name 
+          if item.description
+            div=item.description 
+          div=[`$${item.price}` ]
+          div=`${item.stock} in stock` 
+          div
+            if item.category.length === 0
+              span Uncategorized 
+            else
+              span Category: 
+              for category in item.category 
                 a(href=`/inventory/category/${category._id}`)=category.name
-                if item.category.length > 1 && item.category[item.category.length - 1] !== category
+                  if item.category.length > 1 && item.category[item.category.length - 1] !== category
                     span=', '
   else 
     p No items found
-  a(href='/inventory/item/create') Create item

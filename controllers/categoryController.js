@@ -9,7 +9,7 @@ exports.list = asyncHandler(async function(req, res, next) {
     const categories = await Category.find({}).exec();
 
     res.render('category_list', {
-        title: 'List of categories',
+        title: 'Categories',
         categories: categories
     })
 })

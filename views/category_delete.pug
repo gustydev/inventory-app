@@ -13,10 +13,11 @@ block content
         p No items have this category.
     p Are you sure you want to delete it?
     form(method="post")
-        input#categoryid(type='hidden' name='categoryid' value=category._id)
-        label(for="password") Secret password: 
-        input#password(type='password' name='password' required) 
-        button(type='submit') Delete
+        div.form-field
+            input#categoryid(type='hidden' name='categoryid' value=category._id)
+            label(for="password") #[strong Secret password*]: 
+            input#password(type='password' name='password' required) 
+            button(type='submit') Delete
     if errors 
       h2 Errors: 
       ul 

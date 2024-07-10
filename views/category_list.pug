@@ -2,11 +2,12 @@ extends layout
 
 block content 
     h2= title 
+    a(href='/inventory/category/create' style='font-weight: bold') Create category
     if categories.length 
       ul
-      for category in categories 
-        li
-          a(href=`./category/${category._id}`)= category.name
+        for category in categories 
+          li
+            a(href=`./category/${category._id}`)= category.name
     else 
       p No categories found
-    a(href='/inventory/category/create') Create category
+    

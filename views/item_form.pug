@@ -3,27 +3,35 @@ extends layout
 block content 
   h2=title 
   form(method='POST' enctype="multipart/form-data")
-    label(for="name") Name*: 
-    input#name(type="text" name='name' placeholder='item name' required min=1 value=(item === undefined ? '' : item.name))
-    label(for="description") Description: 
-    input#description(type='text' name='description' placeholder='description' value=(item === undefined ? '' : item.description))
-    label(for="price") Price*: 
-    input#price(type='number' name='price' required min=0 value=(item === undefined ? '' : item.price))
-    label(for="stock") Stock*: 
-    input#stock(type='number' name='stock' required min=0 value=(item === undefined ? '' : item.stock))
-    label Category: 
-    for category in categories 
-      if item !== undefined && category.checked === true
-        input(type="checkbox" name='category' id=category._id value=category._id checked)
-      else 
-        input(type="checkbox" name='category' id=category._id value=category._id)
-      label(for=category._id ) &nbsp;#{category.name}
+    div.form-field
+      label(for="name") #[strong Name*]: 
+      input#name(type="text" name='name' placeholder='Item name' required min=1 value=(item === undefined ? '' : item.name))
+    div.form-field  
+      label(for="description") #[strong Description]: 
+      input#description(type='text' name='description' placeholder='Item description' value=(item === undefined ? '' : item.description))
+    div.form-field
+      label(for="price") #[strong Price*]: 
+      input#price(type='number' name='price' placeholder='0' required min=0 value=(item === undefined ? '' : item.price))
+    div.form-field  
+      label(for="stock") #[strong Stock*]: 
+      input#stock(type='number' name='stock' placeholder='0' required min=0 value=(item === undefined ? '' : item.stock))
+    div.form-field
+      label #[strong Category]: 
+      for category in categories 
+        if item !== undefined && category.checked === true
+          input(type="checkbox" name='category' id=category._id value=category._id checked)
+        else 
+          input(type="checkbox" name='category' id=category._id value=category._id)
+        label(for=category._id ) &nbsp;#{category.name}
     if item !== undefined
-      label(for='file') Image (.jpg, .jpeg, .png): 
-      input(type="file" name='image' accept=".png, .jpg, .jpeg" optional)
-      label(for="password") Secret password: 
-      input(type="password" name='password' required)  
-    button(type='submit') Submit
+      div.form-field
+        label(for='file') #[strong Image]: 
+        input(type="file" name='image' accept=".png, .jpg, .jpeg" optional)
+      div.form-field
+        label(for="password") #[strong Secret password*]: 
+        input(type="password" name='password' required)  
+    div.form-field
+      button(type='submit') Submit
     if errors 
       h2 Errors: 
       ul 

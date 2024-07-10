@@ -3,12 +3,12 @@ extends layout
 block content
   h2= `${title}: ${item.name}`
   if item.imgUrl !== undefined
-    img(src=item.imgUrl, alt=item.name)
+    img(src=item.imgUrl, alt=item.name, class='item-detail-img')
   h3 Details:
   ul 
     li #[strong ID:] #{item._id}
     li #[strong Name:] #{item.name}
-    li #[strong Description:] #{item.description}
+    li #[strong Description:] #{item.description || 'No description was provided.'}
     li #[strong Price:] $#{item.price}
     li #[strong In stock:] #{item.stock}
     li #[strong Category:]&nbsp;

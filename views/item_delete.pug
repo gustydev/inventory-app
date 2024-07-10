@@ -19,10 +19,11 @@ block content
               span=', '
   p Are you sure you want to delete this item?
   form(method='POST')
-    input#itemid(type='hidden' name='itemid' value=item._id)
-    label(for="password") Secret password: 
-    input#password(type='password' name='password' required) 
-    button(type='submit') Delete
+    div.form-field
+      input#itemid(type='hidden' name='itemid' value=item._id)
+      label(for="password") #[strong Secret password*]: 
+      input#password(type='password' name='password' required) 
+      button(type='submit') Delete
   if errors 
     h2 Errors: 
     ul 
