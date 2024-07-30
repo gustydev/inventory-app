@@ -15,7 +15,7 @@ block content
         else
           for category in categories
             a(href=category.url)=category.name
-            if item.category.length > 1 && item.category[item.category.length - 1] !== category
+            if category.length > 1 && category[category.length - 1] !== category
               span=', '
   p Are you sure you want to delete this item?
   form(method='POST')

@@ -19,7 +19,7 @@ exports.detail = asyncHandler(async function(req,res,next) {
     const item = await db.selectById('item', req.params.id);
     const categories = await db.getItemCategories(req.params.id);
     // Showing categories on item detail page is simple so I'll do just this one (for now?)
-    console.log(item[0])
+
     res.render('item_detail', {
         title: 'Item',
         item: item[0],
@@ -68,7 +68,8 @@ exports.createPost = [
 
         if (errors.isEmpty()) {
             const createdItem = await db.createItem(...Object.values(item));
-            res.redirect(createdItem.url);
+            console.log(createdItem[0])
+            res.redirect('/' + createdItem[0].url);
         } else {
             const categories = await db.selectAll('category');
             res.render('item_form', {
@@ -109,7 +110,6 @@ exports.updatePost = [
         next();
     },
 
-    // Upload image
     upload.single('image'),
 
     // Sanitize and validate inputs
@@ -122,14 +122,13 @@ exports.updatePost = [
 
     asyncHandler(async function(req,res,next) {
         const errors = validationResult(req);  
-        console.log(req.body.category)
         const item = {
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
             stock: req.body.stock,
             category: req.body.category,
-            imgUrl: undefined,
+            imgurl: req.body.imgurl,
             id: req.params.id
         }
 
@@ -138,13 +137,13 @@ exports.updatePost = [
                 await cloudinary.v2.uploader.upload(`./${req.file.path}`)
                 .then(async function (image) {
                     console.log('Image uploaded to Cloudinary: ', image)
-                    item.imgUrl = image.secure_url;
+                    item.imgurl = image.secure_url;
                 })
                 .catch(error => console.log('Error uploading image: ', error))
             }
 
             const updated = await db.updateItem(...Object.values(item));
-            res.redirect(updated[0].url);
+            res.redirect('/' + updated[0].url);
         } else {
             const categories = await db.selectAll('category');
             const itemCategories = await db.getItemCategories(req.params.id);
@@ -154,7 +153,6 @@ exports.updatePost = [
                     c.checked = true;
                 }
             })
-        
             res.render('item_form', {
                 title: `Update item: ${item.name}`,
                 item: item,
@@ -170,8 +168,8 @@ exports.deleteGet = asyncHandler(async function(req,res,next) {
     const categories = await db.getItemCategories(req.params.id);
 
     res.render('item_delete', {
-        title: `Delete item: ${item.name}`,
-        item: item,
+        title: `Delete item: ${item[0].name}`,
+        item: item[0],
         categories: categories
     })
 })

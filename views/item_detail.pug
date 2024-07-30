@@ -2,8 +2,8 @@ extends layout
 
 block content
   h2= `${title}: ${item.name}`
-  if item.imgUrl
-    img(src=item.imgUrl, alt=item.name, class='item-detail-img')
+  if item.imgurl
+    img(src=item.imgurl, alt=item.name, class='item-detail-img')
   h3 Details:
   ul 
     li #[strong ID:] #{item.id}
@@ -22,6 +22,6 @@ block content
   h3 Actions:
   ul 
     li
-        a(href=`${item.url}/update`) Update
+        a(href=`./${item.id}/update`) Update
     li
-        a(href=`${item.url}/delete`) Delete
+        a(href=`./${item.id}/delete`) Delete

@@ -41,7 +41,7 @@ exports.createPost = [
 
         if (errors.isEmpty()) {
             const newCategory = await db.createCategory(...Object.values(category));
-            res.redirect(newCategory[0].url);
+            res.redirect('/' + newCategory[0].url);
         } else {
             res.render('category_form', {
                 title: 'Create category',
@@ -76,7 +76,7 @@ exports.updatePost = [
 
         if (errors.isEmpty()) {
             const updated = await db.updateCategory(...Object.values(category));
-            res.redirect(updated[0].url);
+            res.redirect('/' + updated[0].url);
         } else {
             res.render('category_form', {
                 title: `Update category: ${category.name}`,

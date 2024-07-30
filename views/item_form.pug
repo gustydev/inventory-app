@@ -26,7 +26,9 @@ block content
     if item !== undefined
       div.form-field
         label(for='file') #[strong Image]: 
-        input(type="file" name='image' accept=".png, .jpg, .jpeg" optional)
+        input#image(type="file" name='image' accept=".png, .jpg, .jpeg" optional)
+        label(for='imgurl')
+        input(type='hidden' name='imgurl' value=item.imgurl)
       div.form-field
         label(for="password") #[strong Secret password*]: 
         input(type="password" name='password' required)  

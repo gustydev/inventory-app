@@ -7,9 +7,9 @@ block content
     ul(class='item-list')
       for item in items 
         li(class='item-list-item')
-          if item.imgUrl
+          if item.imgurl
             div 
-              img(src=item.imgUrl, alt=item.name, class='item-img')
+              img(src=item.imgurl, alt=item.name, class='item-img')
           div
             a(href=`/inventory/item/${item.id}` style='font-weight:bold')=item.name 
           if item.description

@@ -21,7 +21,7 @@ exports.selectById = async function (table, id) {
 
 exports.createItem = async function(name, description, price, stock, category) {
     const { rows } = await pool.query('INSERT INTO item (name, description, price, stock) VALUES ($1, $2, $3, $4) RETURNING id, url', [name, description, price, stock]);
-    if (category && category.length) {
+    if (typeof category === 'array' && category) {
         await Promise.all(category.map(async (c) => {
             const categoryId = await pool.query('SELECT id FROM category WHERE name = $1', [c])
             await pool.query('INSERT INTO item_categories (item_id, category_id) VALUES ($1, $2)', [rows[0].id, categoryId])
