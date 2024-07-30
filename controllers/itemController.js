@@ -50,11 +50,11 @@ exports.createPost = [
     upload.none(),
 
     // Sanitize and validate inputs
-    body('name', 'Name must not be empty').isLength({min: 1}).trim().escape(),
-    body('description', 'Description is invalid').trim().escape(),
-    body('price', 'Price is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
-    body('stock', 'Stock is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
-    body('category.*').escape(),
+    body('name').trim().notEmpty().withMessage('Name must not be empty'),
+    body('description', 'Description is invalid').trim(),
+    body('price').isLength({min:0}).withMessage('Price must be 0 or greater').isNumeric().withMessage('Price must be numeric'),
+    body('stock').isLength({min:0}).withMessage('Stock must be 0 or greater').isNumeric().withMessage('Stock must be numeric'),
+    body('category.*'),
 
     asyncHandler(async function(req,res,next) {
         const errors = validationResult(req);
@@ -68,8 +68,7 @@ exports.createPost = [
 
         if (errors.isEmpty()) {
             const createdItem = await db.createItem(...Object.values(item));
-            console.log(createdItem[0])
-            res.redirect('/' + createdItem[0].url);
+            res.redirect(createdItem[0].url);
         } else {
             const categories = await db.selectAll('category');
             res.render('item_form', {
@@ -113,11 +112,11 @@ exports.updatePost = [
     upload.single('image'),
 
     // Sanitize and validate inputs
-    body('name', 'Name must not be empty').isLength({min: 1}).trim().escape(),
-    body('description', 'Description is invalid').trim().escape(),
-    body('price', 'Price is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
-    body('stock', 'Stock is required and must be a positive number').isLength({min:0}).isNumeric().escape(),
-    body('category.*').escape(),
+    body('name').trim().notEmpty().withMessage('Name must not be empty'),
+    body('description', 'Description is invalid').trim(),
+    body('price').isLength({min:0}).withMessage('Price must be 0 or greater').isNumeric().withMessage('Price must be numeric'),
+    body('stock').isLength({min:0}).withMessage('Stock must be 0 or greater').isNumeric().withMessage('Stock must be numeric'),
+    body('category.*'),
     body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
 
     asyncHandler(async function(req,res,next) {
@@ -143,16 +142,17 @@ exports.updatePost = [
             }
 
             const updated = await db.updateItem(...Object.values(item));
-            res.redirect('/' + updated[0].url);
+            res.redirect(updated[0].url);
         } else {
             const categories = await db.selectAll('category');
-            const itemCategories = await db.getItemCategories(req.params.id);
-        
+            const checkedCats = typeof req.body.category === 'object' ? req.body.category : [req.body.category];
+
             categories.forEach((c) => {
-                if (itemCategories.find(cat => cat.id === c.id)) {
+                if (checkedCats.find(cat => Number(cat) === c.id)) {
                     c.checked = true;
                 }
             })
+
             res.render('item_form', {
                 title: `Update item: ${item.name}`,
                 item: item,
@@ -188,8 +188,8 @@ exports.deletePost = [
             const categories = await db.getItemCategories(req.params.id);
 
             res.render('item_delete', {
-                title: `Delete item: ${item.name}`,
-                item: item,
+                title: `Delete item: ${item[0].name}`,
+                item: item[0],
                 categories: categories,
                 errors: errors.array()
             })

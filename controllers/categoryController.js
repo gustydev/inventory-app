@@ -14,7 +14,7 @@ exports.list = asyncHandler(async function(req, res, next) {
 exports.detail = asyncHandler(async function(req,res,next) {
     const category = await db.selectById('category', req.params.id);
     const itemsWithCategory = await db.getItemsWithCategory(req.params.id);
-    console.log(category)
+
     res.render('category_detail', {
         title: 'Category',
         category: category[0],
@@ -29,8 +29,8 @@ exports.createGet = asyncHandler(async function(req,res,next) {
 })
 
 exports.createPost = [
-    body('name', 'Category name is missing').trim().isLength({min: 1}).escape(),
-    body('description', 'Description has max length of 100 characters').isLength({max: 100}).trim().escape(),
+    body('name', 'Category name is missing').trim().isLength({min: 1}),
+    body('description', 'Description has max length of 100 characters').isLength({max: 100}).trim(),
 
     asyncHandler(async function(req, res, next) {
         const errors = validationResult(req)
@@ -41,7 +41,7 @@ exports.createPost = [
 
         if (errors.isEmpty()) {
             const newCategory = await db.createCategory(...Object.values(category));
-            res.redirect('/' + newCategory[0].url);
+            res.redirect(newCategory[0].url);
         } else {
             res.render('category_form', {
                 title: 'Create category',
@@ -62,9 +62,9 @@ exports.updateGet = asyncHandler(async function(req,res,next) {
 })
 
 exports.updatePost = [
-    body('name', 'Category name is missing').trim().isLength({min: 1}).escape(),
-    body('description', 'Description has max length of 100 characters').isLength({max: 100}).trim().escape(),
-    body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
+    body('name', 'Category name is missing').trim().isLength({min: 1}),
+    body('description', 'Description has max length of 100 characters').isLength({max: 100}).trim(),
+    body('password', 'Incorrect password').equals(process.env.SUPERSECRET),
 
     asyncHandler(async function(req, res, next) {
         const errors = validationResult(req)
@@ -76,7 +76,7 @@ exports.updatePost = [
 
         if (errors.isEmpty()) {
             const updated = await db.updateCategory(...Object.values(category));
-            res.redirect('/' + updated[0].url);
+            res.redirect(updated[0].url);
         } else {
             res.render('category_form', {
                 title: `Update category: ${category.name}`,
@@ -115,10 +115,10 @@ exports.deletePost = [
             const itemCount = await db.countItemsWithCategory(req.params.id);
         
             res.render('category_delete', {
-                title: `Delete category: ${category.name}`,
+                title: `Delete category: ${category[0].name}`,
                 category: category[0],
                 items: itemsWithCategory,
-                count: itemCount
+                count: itemCount[0].count
             })
         }
     })

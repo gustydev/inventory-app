@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS category (
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name text NOT NULL,
   description text,
-  url text GENERATED ALWAYS AS ('inventory/category/' || id) STORED
+  url text GENERATED ALWAYS AS ('/inventory/category/' || id) STORED
 );
 
 CREATE TABLE IF NOT EXISTS item (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS item (
   price integer NOT NULL,
   stock integer NOT NULL,
   imgurl text,
-  url text GENERATED ALWAYS AS ('inventory/item/' || id) STORED
+  url text GENERATED ALWAYS AS ('/inventory/item/' || id) STORED
 );
 
 CREATE TABLE IF NOT EXISTS item_categories (
