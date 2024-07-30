@@ -70,7 +70,11 @@ async function main() {
     connectionString: process.env.POSTGRES_URI
   });
   await client.connect();
-  await client.query(SQL);
+  try {
+    await client.query(SQL);
+  } catch (err) {
+    console.log('DB already populated')
+  }
   await client.end();
   console.log("done");
 }
