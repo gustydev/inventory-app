@@ -66,14 +66,12 @@ VALUES
 
 async function main() {
   console.log("seeding...");
-  const client = new Client({
-    connectionString: process.env.POSTGRES_URI
-  });
+  const client = new Client();
   await client.connect();
   try {
     await client.query(SQL);
   } catch (err) {
-    console.log('DB already populated')
+    console.log('DB already populated: ', err)
   }
   await client.end();
   console.log("done");

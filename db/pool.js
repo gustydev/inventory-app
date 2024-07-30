@@ -1,5 +1,3 @@
 const { Pool } = require("pg");
 
-module.exports = new Pool({
-  connectionString: process.env.POSTGRES_URI
-});
+module.exports = new Pool();  // No options = will use defaults
