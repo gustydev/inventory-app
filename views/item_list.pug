@@ -11,19 +11,19 @@ block content
             div 
               img(src=item.imgUrl, alt=item.name, class='item-img')
           div
-            a(href=`/inventory/item/${item._id}` style='font-weight:bold')=item.name 
+            a(href=`/inventory/item/${item.id}` style='font-weight:bold')=item.name 
           if item.description
             div=item.description 
           div=[`$${item.price}` ]
           div=`${item.stock} in stock` 
-          div
-            if item.category.length === 0
-              span Uncategorized 
-            else
-              span Category: 
-              for category in item.category 
-                a(href=`/inventory/category/${category._id}`)=category.name
-                  if item.category.length > 1 && item.category[item.category.length - 1] !== category
-                    span=', '
+          //- div
+          //-   if item.category.length === 0
+          //-     span Uncategorized 
+          //-   else
+          //-     span Category: 
+          //-     for category in item.category 
+          //-       a(href=`/inventory/category/${category._id}`)=category.name
+          //-         if item.category.length > 1 && item.category[item.category.length - 1] !== category
+          //-           span=', '
   else 
     p No items found

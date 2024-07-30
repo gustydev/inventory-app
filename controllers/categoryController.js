@@ -1,12 +1,9 @@
-require('dotenv').config();
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
-
-const Item = require('../models/item');
-const Category = require('../models/category');
+const db = require('../db/queries');
 
 exports.list = asyncHandler(async function(req, res, next) {
-    const categories = await Category.find({}).exec();
+    const categories = await db.selectAll('category');
 
     res.render('category_list', {
         title: 'Categories',
@@ -15,12 +12,12 @@ exports.list = asyncHandler(async function(req, res, next) {
 })
 
 exports.detail = asyncHandler(async function(req,res,next) {
-    const category = await Category.findById(req.params.id).exec();
-    const itemsWithCategory = await Item.find({category: category}).exec();
-
+    const category = await db.selectById('category', req.params.id);
+    const itemsWithCategory = await db.getItemsWithCategory(req.params.id);
+    console.log(category)
     res.render('category_detail', {
         title: 'Category',
-        category: category,
+        category: category[0],
         items: itemsWithCategory
     })
 })
@@ -37,14 +34,14 @@ exports.createPost = [
 
     asyncHandler(async function(req, res, next) {
         const errors = validationResult(req)
-        const category = new Category({
-            name: req.body.name,
+        const category = {
+            name: req.body.name, 
             description: req.body.description
-        });
+        }
 
         if (errors.isEmpty()) {
-            const newCategory = await category.save();
-            res.redirect(newCategory.url);
+            const newCategory = await db.createCategory(...Object.values(category));
+            res.redirect(newCategory[0].url);
         } else {
             res.render('category_form', {
                 title: 'Create category',
@@ -56,11 +53,11 @@ exports.createPost = [
 ]
 
 exports.updateGet = asyncHandler(async function(req,res,next) {
-    const category = await Category.findById(req.params.id).exec();
+    const category = await db.selectById('category', req.params.id);
 
     res.render('category_form', {
-        title: `Update category: ${category.name}`,
-        category: category
+        title: `Update category: ${category[0].name}`,
+        category: category[0]
     })
 })
 
@@ -71,21 +68,19 @@ exports.updatePost = [
 
     asyncHandler(async function(req, res, next) {
         const errors = validationResult(req)
-        const updatedCategory = new Category({
+        const category = {
             name: req.body.name,
             description: req.body.description,
-            _id: req.params.id
-        });
+            id: req.params.id
+        }
 
         if (errors.isEmpty()) {
-            const updated = await Category.findByIdAndUpdate(req.params.id, updatedCategory, {});
-            res.redirect(updated.url);
+            const updated = await db.updateCategory(...Object.values(category));
+            res.redirect(updated[0].url);
         } else {
-            const category = await Category.findById(req.params.id).exec();
-
             res.render('category_form', {
                 title: `Update category: ${category.name}`,
-                category: updatedCategory,
+                category: category,
                 errors: errors.array()
             })
         }
@@ -93,15 +88,15 @@ exports.updatePost = [
 ]
 
 exports.deleteGet = asyncHandler(async function(req,res,next) {
-    const category = await Category.findById(req.params.id).exec();
-    const itemsWithCategory = await Item.find({category: category}).exec();
-    const itemCount = await Item.countDocuments({category: category}).exec();
+    const category = await db.selectById('category', req.params.id)
+    const itemsWithCategory = await db.getItemsWithCategory(req.params.id);
+    const itemCount = await db.countItemsWithCategory(req.params.id);
 
     res.render('category_delete', {
-        title: `Delete category: ${category.name}`,
-        category: category,
+        title: `Delete category: ${category[0].name}`,
+        category: category[0],
         items: itemsWithCategory,
-        count: itemCount
+        count: itemCount[0].count
     })
 })
 
@@ -112,19 +107,18 @@ exports.deletePost = [
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            await Category.findByIdAndDelete(req.params.id).exec();
+            await db.deleteById('category', req.params.id)
             res.redirect('/inventory/categories');
         } else {
-            const category = await Category.findById(req.params.id).exec();
-            const itemsWithCategory = await Item.find({category: category}).exec();
-            const itemCount = await Item.countDocuments({category: category}).exec();
-    
+            const category = await db.selectById('category', req.params.id)
+            const itemsWithCategory = await db.getItemsWithCategory(req.params.id);
+            const itemCount = await db.countItemsWithCategory(req.params.id);
+        
             res.render('category_delete', {
                 title: `Delete category: ${category.name}`,
-                category: category,
+                category: category[0],
                 items: itemsWithCategory,
-                count: itemCount,
-                errors: errors.array()
+                count: itemCount
             })
         }
     })

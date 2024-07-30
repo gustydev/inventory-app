@@ -3,12 +3,11 @@ const asyncHandler = require("express-async-handler");
 const multer = require('multer');
 const upload = multer({ dest: './public/images/uploads/'});
 const cloudinary = require('cloudinary');
-
-const Category = require('../models/category');
-const Item = require('../models/item');
+const db = require('../db/queries');
 
 exports.list = asyncHandler(async function(req, res, next) {
-    const items = await Item.find().populate('category').exec();
+    const items = await db.selectAll('item');
+    // For now, items in the item list won't show their categories (couldnt figure out how the fuck the sql queries for that work)
 
     res.render('item_list', {
         title: 'Items',
@@ -17,16 +16,19 @@ exports.list = asyncHandler(async function(req, res, next) {
 })
 
 exports.detail = asyncHandler(async function(req,res,next) {
-    const item = await Item.findById(req.params.id).populate('category').exec();
-
+    const item = await db.selectById('item', req.params.id);
+    const categories = await db.getItemCategories(req.params.id);
+    // Showing categories on item detail page is simple so I'll do just this one (for now?)
+    console.log(item[0])
     res.render('item_detail', {
         title: 'Item',
-        item: item
+        item: item[0],
+        categories: categories
     })
 })
 
 exports.createGet = asyncHandler(async function(req,res,next) {
-    const categories = await Category.find({}).exec();
+    const categories = await db.selectAll('category');
 
     res.render('item_form', {
         title: 'Create item',
@@ -56,22 +58,23 @@ exports.createPost = [
 
     asyncHandler(async function(req,res,next) {
         const errors = validationResult(req);
-        const item = new Item({
+        const item = {
             name: req.body.name,
             description: req.body.description,
             price: req.body.price,
             stock: req.body.stock,
             category: req.body.category
-        });
+        }
 
         if (errors.isEmpty()) {
-            await item.save();
-            res.redirect(item.url);
+            const createdItem = await db.createItem(...Object.values(item));
+            res.redirect(createdItem.url);
         } else {
-            const categories = await Category.find({}).exec();
+            const categories = await db.selectAll('category');
             res.render('item_form', {
                 title: 'Create item',
                 categories: categories,
+                item: item[0],
                 errors: errors.array()
             })
         }
@@ -79,18 +82,19 @@ exports.createPost = [
 ]
 
 exports.updateGet = asyncHandler(async function(req,res,next) {
-    const categories = await Category.find({}).exec();
-    const item = await Item.findById(req.params.id).exec();
+    const categories = await db.selectAll('category');
+    const item = await db.selectById('item', req.params.id);
+    const itemCategories = await db.getItemCategories(req.params.id);
 
     categories.forEach((c) => {
-        if (item.category.includes(c._id)) {
+        if (itemCategories.find(cat => cat.id === c.id)) {
             c.checked = true;
         }
     })
 
     res.render('item_form', {
-        title: `Update item: ${item.name}`,
-        item: item,
+        title: `Update item: ${item[0].name}`,
+        item: item[0],
         categories: categories
     })
 })
@@ -117,18 +121,19 @@ exports.updatePost = [
     body('password', 'Incorrect password').equals(process.env.SUPERSECRET).trim().escape(),
 
     asyncHandler(async function(req,res,next) {
-        const errors = validationResult(req);
+        const errors = validationResult(req);  
+        console.log(req.body.category)
+        const item = {
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            stock: req.body.stock,
+            category: req.body.category,
+            imgUrl: undefined,
+            id: req.params.id
+        }
 
         if (errors.isEmpty()) {
-            const item = new Item({
-                name: req.body.name,
-                description: req.body.description,
-                price: req.body.price,
-                stock: req.body.stock,
-                category: req.body.category,
-                _id: req.params.id
-            });
-            
             if (req.file) {
                 await cloudinary.v2.uploader.upload(`./${req.file.path}`)
                 .then(async function (image) {
@@ -138,14 +143,14 @@ exports.updatePost = [
                 .catch(error => console.log('Error uploading image: ', error))
             }
 
-            const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
-            res.redirect(updatedItem.url);
+            const updated = await db.updateItem(...Object.values(item));
+            res.redirect(updated[0].url);
         } else {
-            const categories = await Category.find({}).exec();
-            const item = await Item.findById(req.params.id).exec();
+            const categories = await db.selectAll('category');
+            const itemCategories = await db.getItemCategories(req.params.id);
         
             categories.forEach((c) => {
-                if (item.category.includes(c._id)) {
+                if (itemCategories.find(cat => cat.id === c.id)) {
                     c.checked = true;
                 }
             })
@@ -161,11 +166,13 @@ exports.updatePost = [
 ]
 
 exports.deleteGet = asyncHandler(async function(req,res,next) {
-    const item = await Item.findById(req.params.id).populate('category').exec();
+    const item = await db.selectById('item', req.params.id)
+    const categories = await db.getItemCategories(req.params.id);
 
     res.render('item_delete', {
         title: `Delete item: ${item.name}`,
-        item: item
+        item: item,
+        categories: categories
     })
 })
 
@@ -176,14 +183,16 @@ exports.deletePost = [
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            await Item.findByIdAndDelete(req.params.id);
+            await db.deleteById('item', req.params.id);
             res.redirect('/inventory/items')
         } else {
-            const item = await Item.findById(req.params.id).populate('category').exec();
+            const item = await db.selectById('item', req.params.id);
+            const categories = await db.getItemCategories(req.params.id);
 
             res.render('item_delete', {
                 title: `Delete item: ${item.name}`,
                 item: item,
+                categories: categories,
                 errors: errors.array()
             })
         }

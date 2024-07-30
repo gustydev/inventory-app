@@ -4,17 +4,17 @@ block content
   h2=title 
   h3 Details:
   ul 
-    li #[strong ID:] #{item._id}
+    li #[strong ID:] #{item.id}
     li #[strong Name:] #{item.name}
     li #[strong Description:] #{item.description}
     li #[strong Price:] $#{item.price}
     li #[strong In stock:] #{item.stock}
     li #[strong Category:]&nbsp;
-        if item.category.length === 0
+        if categories.length === 0
           span Uncategorized
         else
-          for category in item.category 
-            a(href=`/inventory/category/${category._id}`)=category.name
+          for category in categories
+            a(href=category.url)=category.name
             if item.category.length > 1 && item.category[item.category.length - 1] !== category
               span=', '
   p Are you sure you want to delete this item?

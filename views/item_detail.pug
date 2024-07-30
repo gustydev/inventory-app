@@ -2,26 +2,26 @@ extends layout
 
 block content
   h2= `${title}: ${item.name}`
-  if item.imgUrl !== undefined
+  if item.imgUrl
     img(src=item.imgUrl, alt=item.name, class='item-detail-img')
   h3 Details:
   ul 
-    li #[strong ID:] #{item._id}
+    li #[strong ID:] #{item.id}
     li #[strong Name:] #{item.name}
     li #[strong Description:] #{item.description || 'No description was provided.'}
     li #[strong Price:] $#{item.price}
     li #[strong In stock:] #{item.stock}
     li #[strong Category:]&nbsp;
-        if item.category.length === 0
+        if !categories || categories.length === 0
           span Uncategorized
         else
-          for category in item.category 
-            a(href=`/inventory/category/${category._id}`)=category.name
-            if item.category.length > 1 && item.category[item.category.length - 1] !== category
+          for category in categories 
+            a(href=category.url)=category.name
+            if categories.length > 1 && categories[categories.length - 1] !== category
               span=', '
   h3 Actions:
   ul 
     li
-        a(href=`/inventory/item/${item._id}/update`) Update
+        a(href=`${item.url}/update`) Update
     li
-        a(href=`/inventory/item/${item._id}/delete`) Delete
+        a(href=`${item.url}/delete`) Delete

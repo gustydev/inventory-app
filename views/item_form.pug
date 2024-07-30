@@ -19,10 +19,10 @@ block content
       label #[strong Category]: 
       for category in categories 
         if item !== undefined && category.checked === true
-          input(type="checkbox" name='category' id=category._id value=category._id checked)
+          input(type="checkbox" name='category' id=category.id value=category.id checked)
         else 
-          input(type="checkbox" name='category' id=category._id value=category._id)
-        label(for=category._id ) &nbsp;#{category.name}
+          input(type="checkbox" name='category' id=category.id value=category.id)
+        label(for=category.id ) &nbsp;#{category.name}
     if item !== undefined
       div.form-field
         label(for='file') #[strong Image]: 

@@ -1,15 +1,13 @@
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
-
-const Category = require('../models/category');
-const Item = require('../models/item');
+const db = require('../db/queries');
 
 exports.index = asyncHandler(async function(req, res, next) {
     const [categories, items, categoryCount, itemCount] = await Promise.all([
-        Category.find().exec(),
-        Item.find().exec(),
-        Category.countDocuments({}).exec(),
-        Item.countDocuments({}).exec()
+        db.selectAll('category'),
+        db.selectAll('item'),
+        db.countRows('category'),
+        db.countRows('item')
     ]);
 
     let stock = 0;
@@ -21,8 +19,8 @@ exports.index = asyncHandler(async function(req, res, next) {
         title: 'Home',
         categories: categories,
         items: items,
-        categoryCount: categoryCount,
-        itemCount: itemCount,
+        categoryCount: categoryCount[0].count,
+        itemCount: itemCount[0].count,
         stock: stock
     })
 })
