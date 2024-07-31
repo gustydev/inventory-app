@@ -8,8 +8,3 @@ This is the MongoDB version. I have also refactored the project to use PostgreSQ
 2. Model-View-Controller architecture
 3. Image uploading to Cloudinary (SaaS service for file hosting)
 4. CRUD operations on items and categories in MongoDB
-
-## Live Previews
-**Mongo Version**: https://inv-app.adaptable.app
-
-**PostgreSQL Version**: https://invapp-postgres.adaptable.app
