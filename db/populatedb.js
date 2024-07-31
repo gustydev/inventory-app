@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 require('dotenv').config();
 const { Client } = require("pg");
-const fs = require('fs');
 
 const SQL = `
 CREATE TABLE IF NOT EXISTS category (
@@ -67,18 +66,12 @@ VALUES
 
 async function main() {
   console.log("seeding...");
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-      ca: process.env.PGSSLROOTCERT ? fs.readFileSync(process.env.PGSSLROOTCERT).toString() : undefined
-    }
-  });
+  const client = new Client();
   await client.connect();
   try {
     await client.query(SQL);
   } catch (err) {
-    console.log('DB already populated (or, another error has occured): ', err)
+    console.log('DB already populated: ', err)
   }
   await client.end();
   console.log("done");
