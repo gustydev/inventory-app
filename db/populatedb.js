@@ -1,6 +1,9 @@
 #! /usr/bin/env node
 require('dotenv').config();
 const { Client } = require("pg");
+const { argv } = require('node:process');
+
+const connectionString = argv[2]; // This is the url passed to the node command (example: node db/populatedb.js 'localhost//whatever')
 
 const SQL = `
 CREATE TABLE IF NOT EXISTS category (
@@ -66,7 +69,9 @@ VALUES
 
 async function main() {
   console.log("seeding...");
-  const client = new Client();
+  const client = new Client({
+    connectionString
+  });
   await client.connect();
   try {
     await client.query(SQL);
