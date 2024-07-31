@@ -3,14 +3,14 @@ require('dotenv').config();
 const { Client } = require("pg");
 const { argv } = require('node:process');
 
-const connectionString = argv[2]; // This is the url passed to the node command (example: node db/populatedb.js 'localhost//whatever')
+const connectionString = argv[2]; // This is the url passed to the node command (example: node db/populatedb.js 'postgresql://whatever:lol@localhost:1234/random_db')
 
 const SQL = `
 CREATE TABLE IF NOT EXISTS category (
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name text NOT NULL,
   description text,
-  url text GENERATED ALWAYS AS ('/inventory/category/' || id) STORED
+  url text GENERATED ALWAYS AS ('/inventory/category/' || id::text) STORED
 );
 
 CREATE TABLE IF NOT EXISTS item (
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS item (
   price integer NOT NULL,
   stock integer NOT NULL,
   imgurl text,
-  url text GENERATED ALWAYS AS ('/inventory/item/' || id) STORED
+  url text GENERATED ALWAYS AS ('/inventory/item/' || id::text) STORED
 );
 
 CREATE TABLE IF NOT EXISTS item_categories (
